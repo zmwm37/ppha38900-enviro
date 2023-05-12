@@ -1,5 +1,4 @@
 import pandas as pd 
-import numpy as np
 
 if __name__ == '__main__':
     air = pd.read_csv('../../data/processed/aggregated_aqi_daily_max.csv')
@@ -23,9 +22,12 @@ if __name__ == '__main__':
     # cleanup fields
     df['sta'] = df['sta'].fillna(0)
     df_complete = df[~df['start_date'].isna()]
-    df_complete = df_complete.drop(['date_clean', 'wpgt', 'tsun'], axis=1)
+    df_complete = df_complete.drop(['date_clean', 'start_date', 'time', 'wpgt', 'tsun'], axis=1)
+        # wpgt is peak wind gust, not captured
+        # tsun is daily sunshine total, not captured
 
     # add additional fields
+    # TODO - impute missing data
     # TODO - makes fields for time t-1
     # TODO - adjust seasonal fields to get rolling window residuals
     print("WARNING - CODE HAS SOME TODOS")

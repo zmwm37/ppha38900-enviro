@@ -2,8 +2,12 @@ import pandas as pd
 import numpy as np
 import os
 
-def aggregate_bike_df(df: pd.DataFrame) -> pd.DataFrame:
-    df_agg = df.groupby(['start_date', 'user_type']) \
+def aggregate_bike_df(df: pd.DataFrame, mode=None) -> pd.DataFrame:
+    if mode == 'bsfa':
+        agg_cols = ['start_date', 'user_type', 'bike_share_for_all_trip']
+    else:
+        agg_cols = ['start_date', 'user_type']
+    df_agg = df.groupby(agg_cols) \
         .agg(num_trips = ("duration_sec", "count"),
             avg_duration = ("duration_sec",'mean')) \
         .reset_index()
@@ -15,7 +19,7 @@ def clean_bike_fields(df: pd.DataFrame) -> pd.DataFrame:
     df['start_date'] = df['start_time_dt'].dt.date
     return df
 
-def feed_bike_files(file_path: str, selected_cols: list, v: int) -> tuple[pd.DataFrame, list]:
+def feed_bike_files(file_path: str, selected_cols: list, mode:str, v: int) -> tuple[pd.DataFrame, list]:
     '''
     Process and combine files from specified file_path
 
@@ -46,7 +50,7 @@ def feed_bike_files(file_path: str, selected_cols: list, v: int) -> tuple[pd.Dat
             error_log.append(f)
             continue
         df_clean = clean_bike_fields(df)
-        df_agg = aggregate_bike_df(df_clean)
+        df_agg = aggregate_bike_df(df_clean, mode=mode)
         df_combo = pd.concat([df_combo, df_agg])
 
     return (df_combo, error_log)
