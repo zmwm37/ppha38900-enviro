@@ -44,16 +44,12 @@ def main():
                   + "&datatype=" + options["data_type"] \
                   + "&format=" + options["format"] \
                   + "&api_key=" + options["api_key"] \
-                  + "&verbose=" + options["verbose"]
+                  + "&verbose=" + options["verbose"] \
+                  + "&includerawconcentrations=" + options["includerawconcentrations"] 
 
     try:
         # Request AirNowAPI data
         print("Requesting AirNowAPI data...")
-
-        # User's home directory.
-        home_dir = expanduser("~")
-        download_file_name = "AirNowAPI" + datetime.now().strftime("_%Y%M%d%H%M%S." + options["ext"])
-        download_file = os.path.join(home_dir, download_file_name)
 
         # Perform the AirNow API data request
         #api_data = urllib.request.urlopen(REQUEST_URL)
@@ -71,7 +67,6 @@ def main():
 
         # Download complete
         print(f"Download URL: {REQUEST_URL}")
-        print(f"Download File: {download_file}") 
 
     except Exception as e:
         print(f"Unable perform AirNowAPI request. {e}")
