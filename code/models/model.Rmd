@@ -1,0 +1,116 @@
+```{r}
+library(tidyverse)
+library(ggplot2)
+library(stargazer)
+library(knitr)
+```
+
+```{r}
+df <- read_csv('../../data/final/final_data_bsfa.csv')
+head(df)
+```
+```{r}
+colnames(df)
+```
+Filter to residual columns
+```{r}
+resid_cols <- colnames(df)[22:34]
+resid_cols <-  c(resid_cols, "user_type_clean", "sta", "prcp")
+normal_cols <- colnames(df)[2:20]
+```
+
+```{r}
+resid_df <- df %>% select(resid_cols)
+normal_df <- df %>% select(normal_cols)
+```
+
+```{r}
+resid_cols
+```
+
+
+```{r}
+normal_df_sub_std <- normal_df %>% 
+    filter(user_type_clean == "Subscriber - Standard")
+print(dim(normal_df_sub_std))
+
+normal_df_sub_bsfa <- normal_df %>% 
+    filter(user_type_clean == "Subscriber - BSFA")
+dim(normal_df_sub_bsfa)
+
+normal_df_customer <- normal_df %>% 
+    filter(user_type_clean == "Customer")
+dim(normal_df_customer)
+
+```
+
+
+```{r}
+resid_df_sub_std <- resid_df %>% 
+    filter(user_type_clean == "Subscriber - Standard")
+print(dim(resid_df_sub_std))
+
+resid_df_sub_bsfa <- resid_df %>% 
+    filter(user_type_clean == "Subscriber - BSFA")
+dim(resid_df_sub_bsfa)
+
+resid_df_customer <- resid_df %>% 
+    filter(user_type_clean == "Customer")
+dim(resid_df_customer)
+```
+Build models:
+
+Riding count for standard subscribers 
+```{r}
+lm1 <- lm(data=resid_df_sub_std, num_trips_res ~ max_aqi_res + CO_res + NO2_res + OZONE_res + PM2.5_res + tmax_res + wspd_res + pres_res + prcp + sta)
+
+lm2 <- lm(data=resid_df_sub_std, avg_duration_res ~ max_aqi_res + CO_res + NO2_res + OZONE_res + PM2.5_res + tmax_res + wspd_res + pres_res + prcp + sta)
+```
+
+Riding count for BSFA subscribers 
+```{r}
+lm3 <- lm(data=resid_df_sub_bsfa, num_trips_res ~ max_aqi_res + CO_res + NO2_res + OZONE_res + PM2.5_res + tmax_res + wspd_res + pres_res + prcp + sta)
+
+lm4 <- lm(data=resid_df_sub_bsfa, avg_duration_res ~ max_aqi_res + CO_res + NO2_res + OZONE_res + PM2.5_res + tmax_res + wspd_res + pres_res + prcp + sta)
+```
+
+```{r}
+lm5 <- lm(data=resid_df_customer, num_trips_res ~ max_aqi_res + CO_res + NO2_res + OZONE_res + PM2.5_res + tmax_res + wspd_res + pres_res + prcp + sta)
+
+lm6 <- lm(data=resid_df_customer, avg_duration_res ~ max_aqi_res + CO_res + NO2_res + OZONE_res + PM2.5_res + tmax_res + wspd_res + pres_res + prcp + sta)
+```
+
+```{r}
+stargazer(lm1, lm3, lm5, type="text", title="Results: Number of Trips Residual", 
+          column.labels = c('Std. Sub.', 'BSFA Sub.', 'Customer'), 
+          out="trip_residual.html",
+          ci=TRUE, ci.level=0.95)
+```
+```{r}
+stargazer(lm2, lm4, lm6, type="text", title="Results: Avg. Duration of Trips Residual",
+          column.labels = c('Std. Sub.', 'BSFA Sub.', 'Customer'), 
+          out="duration_residual.html",
+          ci=TRUE, ci.level=0.95)
+```
+
+
+```{r}
+lm7 <- lm(data=normal_df_sub_std, num_trips ~ max_aqi + CO + NO2 + OZONE + PM2.5 + tmax + wspd + pres + prcp + sta)
+
+lm8 <- lm(data=normal_df_sub_std, avg_duration ~ max_aqi + CO + NO2 + OZONE + PM2.5 + tmax + wspd + pres + prcp + sta)
+
+lm9 <- lm(data=normal_df_sub_bsfa, num_trips ~ max_aqi + CO + NO2 + OZONE + PM2.5 + tmax + wspd + pres + prcp + sta)
+
+lm10 <- lm(data=normal_df_sub_bsfa, avg_duration ~ max_aqi + CO + NO2 + OZONE + PM2.5 + tmax + wspd + pres + prcp + sta)
+
+lm11 <- lm(data=normal_df_customer, num_trips ~ max_aqi + CO + NO2 + OZONE + PM2.5 + tmax + wspd + pres + prcp + sta)
+
+lm12 <- lm(data=normal_df_customer, avg_duration ~ max_aqi + CO + NO2 + OZONE + PM2.5 + tmax + wspd + pres + prcp + sta)
+```
+
+```{r}
+stargazer(lm7, lm9, lm11, type="text", title="Results: Number of Trips")
+```
+```{r}
+stargazer(lm8, lm10, lm12, type="text", title="Results: Avg. Duration of Trips")
+```

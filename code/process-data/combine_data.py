@@ -54,4 +54,4 @@ if __name__ == '__main__':
     df_complete_residuals = df_complete.merge(residuals, left_index=True, right_index=True) \
         .dropna()
     print(f"Shape of final dataset: {df_complete_residuals.shape}")
-    df_complete.to_csv('../../data/final/final_data_bsfa.csv', index=False)
+    df_complete_residuals.to_csv('../../data/final/final_data_bsfa.csv', index=False)
